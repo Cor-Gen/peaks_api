@@ -4,6 +4,7 @@ from asyncpg import exceptions as asyncpg_exc
 from ormar import exceptions as ormar_exc
 from ormar import and_
 from typing import List, Union
+from copy import deepcopy
 
 
 router = APIRouter()
@@ -28,6 +29,19 @@ async def get_peak(id: int):
 
 @router.post("/peaks/", response_model = Peak, status_code = 201)
 async def create_peak(peak: Peak):
+    detail = {"detail": []}
+    loc    = {"loc": ["body"],
+              "msg": "field required",
+              "type": "value_error.missing"}
+
+    for key, value in peak.dict().items():
+        if key != "id" and value == None:
+            new_loc = deepcopy(loc)
+            new_loc["loc"].append(key)
+            detail["detail"].append(new_loc)
+    if detail["detail"]:
+        raise HTTPException(status_code = 422, detail = detail)
+    
     try:
         new_peak = await peak.save()
         return new_peak
