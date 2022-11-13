@@ -7,20 +7,32 @@ from typing import List, Union
 from copy import deepcopy
 
 
+# routes for peaks_api
 router = APIRouter()
 
-@router.get("/peaks/", response_model = List[Peak])
-async def get_peaks(lat_min: float = -90,
+@router.get("/peaks", response_model = List[Peak])
+async def get_peak():
+# GET all peaks.
+    return await Peak.objects.all()
+
+@router.get("/peaks/search", response_model = List[Peak])
+# GET all peaks matching the search (with possibility to filter peaks within a given geographical bouding box).
+async def get_peaks(name   : str = None,
+                    lat_min: float = -90,
                     lat_max: float = 90,
                     lon_min: float = -180,
                     lon_max: float = 180):
-    return await Peak.objects.filter(and_(lat__gte = lat_min),
-                                     and_(lat__lte = lat_max),
-                                     and_(lon__gte = lon_min),
-                                     and_(lon__lte = lon_max)).all()
+    search = Peak.objects.filter(and_(lat__gte = lat_min),
+                                 and_(lat__lte = lat_max),
+                                 and_(lon__gte = lon_min),
+                                 and_(lon__lte = lon_max))
+    if name:
+        search = search.filter(name = name)
+    return await search.all()
 
 @router.get("/peaks/{id}")
 async def get_peak(id: int):
+# GET a peak by its id.
     try:
         peak_db = Peak.objects.get(id = id)
         return await peak_db
@@ -28,6 +40,7 @@ async def get_peak(id: int):
         raise HTTPException(status_code = 404, detail = "Peak not found.")
 
 @router.post("/peaks/", response_model = Peak, status_code = 201)
+# POST a peak.
 async def create_peak(peak: Peak):
     detail = {"detail": []}
     loc    = {"loc": ["body"],
@@ -50,6 +63,7 @@ async def create_peak(peak: Peak):
 
 @router.put("/peaks/{id}", response_model = Peak)
 async def update_peak(id: int, peak: Peak):
+# PUT an update to a peak (partial or complete).
     try:
         item_db = await Peak.objects.get(pk = id)
         update = peak.dict(exclude_none = True)
@@ -59,6 +73,7 @@ async def update_peak(id: int, peak: Peak):
 
 @router.delete("/peaks/{id}")
 async def delete_peak(id: int):
+# DELETE a peak.
     try:
         peak_db = await Peak.objects.get(id = id)
         await peak_db.delete()
