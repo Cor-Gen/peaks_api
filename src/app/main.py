@@ -6,6 +6,10 @@ from app.backend import routes
 # Fast API
 app = FastAPI(title = "FastAPI, Docker, and Traefik")
 
+@app.get("/")
+async def root():
+    return {"message": "Hello from peaks api!"}
+
 # mandatory to connect to the database with the API
 @app.on_event("startup")
 async def startup():
@@ -19,4 +23,4 @@ async def shutdown():
         await database.disconnect()
 
 # to add our routes to the API
-app.include_router(routes.router)
+app.include_router(routes.router, prefix="/peaks", responses={404: {"description": "Not found"}})
