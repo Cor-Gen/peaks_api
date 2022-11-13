@@ -52,8 +52,7 @@ async def create_peak(peak: Peak):
 async def update_peak(id: int, peak: Peak):
     try:
         item_db = await Peak.objects.get(pk = id)
-        update = peak.dict()
-        update.pop("id")
+        update = peak.dict(exclude_none = True)
         return await item_db.upsert(id = id, **update)
     except ormar_exc.NoMatch:
         raise HTTPException(status_code = 404, detail = "Peak not found.")
