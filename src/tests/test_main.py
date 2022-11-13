@@ -13,7 +13,6 @@ test_request_payload  = {"name": "Mont Blanc",
 
 parameters = ("id, payload, status_code", [
                                            [1, {}, 422],
-                                           [1, {"name": "Pic du Mont Blanc"}, 422],
                                            [999, test_request_payload, 404],
                                           ]
              )
@@ -22,10 +21,6 @@ parameters = ("id, payload, status_code", [
 def client(): 
     with TestClient(app) as client: # context manager will invoke startup event 
         yield client
-
-def test_read_peaks(client):
-    response = client.get("/peaks/")
-    assert response.status_code == 200
 
 def test_create_peak(client):
     response = client.post("/peaks/", json = test_request_payload)
@@ -38,6 +33,20 @@ def test_create_existing_peak(client):
     response = client.post("/peaks/", json = test_request_payload)
     assert response.status_code == 400
     assert response.json() == {"detail": "Peak already exist(s)."}
+
+def test_read_peaks(client):
+    response = client.get("/peaks/")
+    assert response.status_code == 200
+
+def test_search_peaks_by_name(client):
+    response = client.get(f"/peaks/search/?name={test_request_payload['name']}")
+    assert response.status_code == 200
+    assert response.json()[0]['name'] == test_request_payload['name']
+
+def test_search_peaks_in_bound_box(client):
+    response = client.get("/peaks/search/?lat_min=0&lat_max=50&lon_min=-50&lon_max=0")
+    assert response.status_code == 200
+    assert response.json() == []
 
 def test_update_peak(client):
     test_request_payload.update({"name": "Pic du Mont Blanc"})

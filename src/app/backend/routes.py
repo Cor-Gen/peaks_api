@@ -10,12 +10,12 @@ from copy import deepcopy
 # routes for peaks_api
 router = APIRouter()
 
-@router.get("/peaks", response_model = List[Peak])
+@router.get("/peaks/", response_model = List[Peak])
 async def get_peak():
 # GET all peaks.
     return await Peak.objects.all()
 
-@router.get("/peaks/search", response_model = List[Peak])
+@router.get("/peaks/search/", response_model = List[Peak])
 # GET all peaks matching the search (with possibility to filter peaks within a given geographical bouding box).
 async def get_peaks(name   : str = None,
                     lat_min: float = -90,
