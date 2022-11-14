@@ -17,7 +17,12 @@ To launch the application: <br/>
 - Launch the docker compose => docker-compose up -d<br/>
 - Go to http://fastapi.localhost:8008/ and http://fastapi.localhost:8081/dashboard/#/ to see the result.<br/>
 peaks are available under /peaks route, where you can manage them: get/add/update/delete peaks (partial update is possible).<br/>
-Note that the datastore is at first empty, but as an exemple, you can add your first peak with the following payload:<br/>
+peaks are composed by:
+- a name.<br/>
+- an altitude (in meters).<br/>
+- a latitude (in decimal degrees).<br/>
+- a longitude (in decimal degrees).<br/>
+Note that the datastore is at first empty, but as an exemple, you can add your first peak with the following payload exemple:<br/>
 {"name": "Mont Blanc",<br/> 
  "alt" : 4808,<br/>
  "lat" : 45.832622,<br/>
@@ -26,5 +31,10 @@ Once you added some peaks, you can use the /peaks/search/ route to filter peaks 
 http://fastapi.localhost:8008/search/?name=Mont Blanc<br/>
 or by match a (lat_min, lat_max, lon_min, lon_max) box:<br/>
 http://fastapi.localhost:8008/peaks/search/?lat_min=0&lat_max=50&lon_min=-45&lon_max=5<br/>
+(first version, to be improved).<br/>
 
 Also note that some unittest are available in tests folder, and must be executed first and foremost any action with the API ; otherwise some of the tests will fail due to some static choice for this version,and you will have to put down and up the container to clear the datastore.<br/>
+
+## Next Improvments
+- To store latitude and longitude directly as coordinates in PostgreSQL of type "point", and filter using a real bouding box trough ST_MakeEnvelope.<br/>
+- Production version with Gunicorn.<br/>
