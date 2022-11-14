@@ -14,7 +14,7 @@ Note that .devcontainer folder is specific to Visual Studio Code, to build and t
 ## How to
 To launch the application: <br/>
 - Clone the repository.<br/>
-- Launch the docker compose => docker-compose up -d<br/>
+- Launch the docker compose => docker-compose up -d --build<br/>
 - Go to http://fastapi.localhost:8008/ and http://fastapi.localhost:8081/dashboard/#/ to see the result.<br/>
 peaks are available under /peaks route, where you can manage them: get/add/update/delete peaks (partial update is possible).<br/>
 peaks are composed by:
