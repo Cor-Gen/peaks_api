@@ -7,13 +7,13 @@ services:
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
     volumes:
       - ./src/:/src/app/
-    expose:  # new
+    expose:
       - 8000
     environment:
       - DATABASE_URL=postgresql://MFI:fastapi_for_peaks@db:5432/db_fastapi_for_peaks_dev
     depends_on:
       - db
-    labels: # new
+    labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
 
@@ -28,7 +28,7 @@ services:
       - POSTGRES_PASSWORD=fastapi_for_peaks
       - POSTGRES_DB=db_fastapi_for_peaks_dev
       
-  traefik: # new
+  traefik:
     image: traefik:v2.2
     ports:
       - 8008:80
