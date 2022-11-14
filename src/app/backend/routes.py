@@ -10,12 +10,12 @@ from copy import deepcopy
 # routes for peaks_api
 router = APIRouter()
 
-@router.get("/peaks/", response_model = List[Peak])
+@router.get("/", response_model = List[Peak])
 async def get_peak():
 # GET all peaks.
     return await Peak.objects.all()
 
-@router.get("/peaks/search/", response_model = List[Peak])
+@router.get("/search/", response_model = List[Peak])
 # GET all peaks matching the search (with possibility to filter peaks within a given geographical bouding box).
 async def get_peaks(name   : str = None,
                     lat_min: float = -90,
@@ -30,7 +30,7 @@ async def get_peaks(name   : str = None,
         search = search.filter(name = name)
     return await search.all()
 
-@router.get("/peaks/{id}")
+@router.get("/{id}")
 async def get_peak(id: int):
 # GET a peak by its id.
     try:
@@ -39,7 +39,7 @@ async def get_peak(id: int):
     except ormar_exc.NoMatch:
         raise HTTPException(status_code = 404, detail = "Peak not found.")
 
-@router.post("/peaks/", response_model = Peak, status_code = 201)
+@router.post("/", response_model = Peak, status_code = 201)
 # POST a peak.
 async def create_peak(peak: Peak):
     detail = {"detail": []}
@@ -61,7 +61,7 @@ async def create_peak(peak: Peak):
     except asyncpg_exc.UniqueViolationError:
         raise HTTPException(status_code = 400, detail = "Peak already exist(s).")
 
-@router.put("/peaks/{id}", response_model = Peak)
+@router.put("/{id}", response_model = Peak)
 async def update_peak(id: int, peak: Peak):
 # PUT an update to a peak (partial or complete).
     try:
@@ -71,7 +71,7 @@ async def update_peak(id: int, peak: Peak):
     except ormar_exc.NoMatch:
         raise HTTPException(status_code = 404, detail = "Peak not found.")
 
-@router.delete("/peaks/{id}")
+@router.delete("/{id}")
 async def delete_peak(id: int):
 # DELETE a peak.
     try:
