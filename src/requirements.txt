@@ -8,6 +8,7 @@ uvicorn
 pytest
 requests
 
+# for prod (later)
 # asyncpg==0.22.0
 # fastapi==0.63.0
 # ormar==0.10.5
